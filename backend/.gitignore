@@ -1,0 +1,30 @@
+# 🔹 Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 🔹 Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# 🔹 Pipenv
+Pipfile.lock
+
+# 🔹 Django stuff
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# 🔹 Static & media (optional depending on setup)
+media/
+staticfiles/
+
+# 🔹 Environment variables
+.env.*
+!.env.example
+
+# 🔹 VS Code
+.vscode/
