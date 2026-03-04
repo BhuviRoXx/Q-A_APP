@@ -17,12 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from qa_app.views import QuestionViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from qa_app.views import QuestionViewSet, AnswerViewSet, signup, signin
 
 router = DefaultRouter()
 router.register(r'questions', QuestionViewSet, basename = 'question' )
+router.register(r'answers', AnswerViewSet, basename = 'answer' )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/auth/signup/', signup, name='signup'),
+    path('api/auth/signin/', signin, name='signin'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/', include(router.urls)),
 ]

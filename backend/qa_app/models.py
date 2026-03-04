@@ -51,3 +51,6 @@ class Vote(models.Model):
 
     class Meta:
         unique_together = ['answer', 'user'] # no single user should like the same answer for multiple times eg : (A,1) (A,2) Not again (A,2)
+
+    def __str__(self):
+        return f"{self.user.username} voted on {self.answer.id}"
