@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Question, Answer, Vote
 from django.contrib.auth.models import User
 
+from django.db import models
 # User Serializers for Authentication
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
@@ -46,9 +47,17 @@ class AnswerSerializer(serializers.ModelSerializer):
 # Question serializer with nested answers
 class QuestionSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
-    answers = AnswerSerializer(many=True, read_only=True)  # nested answers
+    answers = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
         fields = ['id', 'user', 'username', 'title', 'description', 'created_at', 'answers']
         read_only_fields = ['id', 'created_at', 'username']
+
+    def get_answers(self, obj):
+        # obj is the Question instance
+        return AnswerSerializer(
+            obj.answers.annotate(votes_count=models.Count('votes')).order_by('-votes_count'),
+            many=True,
+            context=self.context
+        ).data
