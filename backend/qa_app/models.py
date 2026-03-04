@@ -25,6 +25,8 @@ class Question(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    objects = QuestionManager()
+
     def __str__(self):
         return self.title
 
