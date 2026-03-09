@@ -52,7 +52,7 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = ['id', 'user', 'username', 'title', 'description', 'created_at', 'answers']
-        read_only_fields = ['id', 'created_at', 'username']
+        read_only_fields = ['id', 'user', 'created_at', 'username']
 
     def get_answers(self, obj):
         # obj is the Question instance
