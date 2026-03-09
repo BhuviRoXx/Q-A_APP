@@ -10,15 +10,15 @@ import {
   StatusBar,
 } from "react-native";
 import { useRouter } from "expo-router";
-import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
-
-export default function LoginScreen() {
-  const router = useRouter();
+export default function SignUp() {
   const[name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const[error, setError] = useState("");
+  const router = useRouter();
+  const { signup } = useAuth();
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -59,11 +59,8 @@ export default function LoginScreen() {
       // Registration logic here
       console.log("Registration with:", { name, email, password });
 
-      const res = await axios.post("",{
-        username : name,
-        email : email,
-        password : password
-      })
+      await signup(name,email,password);
+
       // Navigate to login after successful registration
       router.push("/(auth)/login");
     } catch (err) {
@@ -83,7 +80,7 @@ export default function LoginScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.welcome}>Welcome</Text>
-          <Text style={styles.subtitle}>Sign in to your account</Text>
+          <Text style={styles.subtitle}>Register your account</Text>
         </View>
 
         {/* Form */}

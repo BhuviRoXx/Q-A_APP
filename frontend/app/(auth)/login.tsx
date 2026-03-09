@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,59 +9,60 @@ import {
   Platform,
   StatusBar,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { useFocusEffect } from "expo-router";
-import { useCallback } from "react";
+import { useRouter, useFocusEffect } from "expo-router";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   useFocusEffect(
-  useCallback(() => {
-    setError("");
-    setEmail("");
-    setPassword("");
-  }, [])
-);
+    useCallback(() => {
+      setError("");
+      setEmail("");
+      setPassword("");
+    }, [])
+  );
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-const handleRegister = () => {
+  const handleLogin = async () => {
     try {
-      // Reset error
       setError("");
 
-      // Validation
       if (!email.trim()) {
         setError("Email is required");
         return;
       }
+
       if (!validateEmail(email)) {
         setError("Please enter a valid email");
         return;
       }
+
       if (!password) {
         setError("Password is required");
         return;
       }
+
       if (password.length < 6) {
         setError("Password must be at least 6 characters");
         return;
       }
 
-      // Registration logic here
-      console.log("Registration with:", {email, password });
-      // Navigate to login after successful registration
-      router.push("/(auth)/login");
+      await login(email, password);
+
+      router.replace("/(tabs)/home");
     } catch (err) {
-      setError("An error occurred. Please try again.");
-      console.error(err);
+      setError("Invalid email or password");
+      console.log(err);
     }
   };
 
@@ -76,13 +77,12 @@ const handleRegister = () => {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.welcome}>Welcome</Text>
-          <Text style={styles.subtitle}>login to your account</Text>
+          <Text style={styles.subtitle}>Login to your account</Text>
         </View>
 
         {/* Form */}
         <View style={styles.form}>
-
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Email</Text>
@@ -110,16 +110,16 @@ const handleRegister = () => {
             />
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
-            <Text style={styles.loginButtonText}>Log In </Text>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>Log In</Text>
           </TouchableOpacity>
         </View>
 
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => { router.push("/signin");}}>
-            <Text style={styles.signInLink}>Sign Up </Text>
+          <TouchableOpacity onPress={() => router.push("/signup")}>
+            <Text style={styles.signInLink}>Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#111",
   },
-    errorText: {
+  errorText: {
     backgroundColor: "#fee",
     borderLeftWidth: 4,
     borderLeftColor: "#f44336",
